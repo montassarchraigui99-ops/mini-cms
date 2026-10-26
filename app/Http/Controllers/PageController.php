@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
-
 class PageController extends Controller
 {
-    public function home(): View
+    public function home()
     {
         return view('welcome');
     }
 
-    public function about(): View
+    public function about()
     {
         return view('a-propos', [
             'auteur' => 'Montassar Chraigui',
-            'groupe' => 'MDW',
+            'groupe' => 'MDW32',
         ]);
-    }
-
-    public function time(): string
-    {
-        return 'Il est ' . now()->format('H:i:s');
     }
 }
