@@ -3,9 +3,11 @@
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 
 beforeEach(function () {
     $this->withoutVite();
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 function writePostData(array $overrides = []): array
@@ -37,7 +39,7 @@ it('ignores fields that are not in the validation rules', function () {
         ->assertRedirect();
 
     $post = Post::where('slug', 'article-de-test')->firstOrFail();
-    expect($post->user_id)->toBeNull();
+    expect($post->user_id)->toBe(auth()->id());
 });
 
 it('returns to the form with errors and old input for an empty title', function () {

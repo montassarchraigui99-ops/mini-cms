@@ -3,9 +3,11 @@
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 
 beforeEach(function () {
     $this->withoutVite();
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 it('shows the posts list', function () {
@@ -46,8 +48,9 @@ it('returns 404 for an unknown post', function () {
     $this->get('/posts/999')->assertNotFound();
 });
 
-it('shows the create form', function () {
-    $this->get(route('posts.create'))
+it('shows the create form to a logged-in user', function () {
+    $this->actingAs(User::factory()->create())
+        ->get(route('posts.create'))
         ->assertOk()
         ->assertSee('Nouvel article');
 });
