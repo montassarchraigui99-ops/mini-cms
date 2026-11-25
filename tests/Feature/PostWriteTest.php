@@ -1,0 +1,57 @@
+<?php
+
+use App\Models\Category;
+use App\Models\Post;
+use App\Models\Tag;
+
+beforeEach(function () {
+    $this->withoutVite();
+});
+
+function writePostData(array $overrides = []): array
+{
+    return array_merge([
+        'title' => 'Article de test',
+        'slug' => 'article-de-test',
+        'body' => 'Contenu suffisamment long pour passer la validation.',
+        'is_published' => '1',
+    ], $overrides);
+}
+
+it('creates a post with its category and tags', function () {
+    $category = Category::factory()->create();
+    $tag = Tag::factory()->create();
+
+    $this->post(route('posts.store'), writePostData([
+        'category_id' => $category->id,
+        'tags' => [$tag->id],
+    ]))->assertRedirect();
+
+    $post = Post::where('slug', 'article-de-test')->firstOrFail();
+    expect($post->category_id)->toBe($category->id);
+    expect($post->tags->pluck('id')->all())->toEqual([$tag->id]);
+});
+
+it('ignores fields that are not in the validation rules', function () {
+    $this->post(route('posts.store'), writePostData(['user_id' => 999]))
+        ->assertRedirect();
+
+    $post = Post::where('slug', 'article-de-test')->firstOrFail();
+    expect($post->user_id)->toBeNull();
+});
+
+it('returns to the form with errors and old input for an empty title', function () {
+    $this->post(route('posts.store'), writePostData(['title' => '']))
+        ->assertRedirect()
+        ->assertSessionHasErrors('title')
+        ->assertSessionHasInput('slug', 'article-de-test');
+
+    $this->assertDatabaseMissing('posts', ['slug' => 'article-de-test']);
+});
+
+it('rejects a duplicate slug', function () {
+    Post::factory()->create(['slug' => 'article-de-test']);
+
+    $this->post(route('posts.store'), writePostData())
+        ->assertSessionHasErrors('slug');
+});
