@@ -14,7 +14,7 @@ it('shows the dedicated page for a missing post', function () {
 it('keeps the site 404 page for a missing category', function () {
     $this->get('/posts/categorie/inconnue')
         ->assertNotFound()
-        ->assertSee('Page introuvable')
+        ->assertSee('Catégorie introuvable')
         ->assertDontSee('Article introuvable');
 });
 

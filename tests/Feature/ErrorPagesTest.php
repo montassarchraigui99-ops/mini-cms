@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+
 beforeEach(function () {
     $this->withoutVite();
 });
@@ -18,4 +20,14 @@ it('shows the styled 503 page when the site is read-only', function () {
         ->assertStatus(503)
         ->assertSee('Service momentanément indisponible')
         ->assertSee("Retour à l'accueil", false);
+});
+
+it('shows a helpful 404 page for an unknown category', function () {
+    $category = Category::factory()->create(['name' => 'Cuisine', 'slug' => 'cuisine']);
+
+    $this->get(route('posts.category', ['category' => 'inconnue']))
+        ->assertNotFound()
+        ->assertSee('Catégorie introuvable')
+        ->assertSee('Cuisine')
+        ->assertSee(route('posts.category', $category), false);
 });
