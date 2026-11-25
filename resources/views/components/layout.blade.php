@@ -19,6 +19,10 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8">
+        @if (session('success'))
+            <x-alert type="success" class="mb-6" role="status">{{ session('success') }}</x-alert>
+        @endif
+
         {{ $slot }}
     </main>
 </body>
