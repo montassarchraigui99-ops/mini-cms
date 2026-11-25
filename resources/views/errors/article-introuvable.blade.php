@@ -10,4 +10,14 @@
     <p class="mt-6">
         <a href="{{ route('posts.index') }}" class="font-medium text-indigo-600 hover:underline">Voir tous les articles</a>
     </p>
+
+    @if ($recentPosts->isNotEmpty())
+        <h2 class="mt-10 text-xl font-semibold text-gray-900">Articles récents</h2>
+
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            @foreach ($recentPosts as $recentPost)
+                <x-post-card :post="$recentPost" />
+            @endforeach
+        </div>
+    @endif
 </x-layout>
