@@ -32,6 +32,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Charlie Leroy', 'password' => bcrypt('password')]
         );
 
+        User::factory()->admin()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+
         // --- 4 Categories ---
         $categories = collect([
             ['name' => 'Base de données', 'slug' => 'base-de-donnees'],
