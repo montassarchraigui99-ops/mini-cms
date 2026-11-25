@@ -55,3 +55,20 @@ it('rejects a duplicate slug', function () {
     $this->post(route('posts.store'), writePostData())
         ->assertSessionHasErrors('slug');
 });
+
+it('keeps its own slug when the article is updated', function () {
+    $post = Post::factory()->create(['slug' => 'article-de-test']);
+
+    $this->put(route('posts.update', $post), writePostData(['title' => 'Titre modifié']))
+        ->assertRedirect(route('posts.show', $post));
+
+    expect($post->refresh()->slug)->toBe('article-de-test');
+});
+
+it('rejects the slug of another article on update', function () {
+    $post = Post::factory()->create(['slug' => 'article-de-test']);
+    $other = Post::factory()->create(['slug' => 'article-de-jaune']);
+
+    $this->put(route('posts.update', $post), writePostData(['slug' => $other->slug]))
+        ->assertSessionHasErrors('slug');
+});
